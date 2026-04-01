@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Queue</title>
+    <style>
+        body{
+            font-family: Arial;
+            text-align: center;
+            margin-top: 80px;
+            background: #111827;
+            color: white;
+        }
+
+        #number{
+            font-size: 120px;
+            margin: 20px;
+            color: #22c55e;
+        }
+
+        button{
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            background: #22c55e;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Payment Queue</h1>
+    <div id="number">1</div>
+
+    <button onclick="nextStudent()">Next Student</button>
+
+    <script>
+        let current = 1;
+
+        Notification.requestPermission();
+
+        function nextStudent() {
+            current++;
+            document.getElementById("number").innerText = current;
+
+            if (Notification.permission === "granted") {
+                new Notification("Payment Queue", {
+                    body: "Now serving number " + current
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
