@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Payment Queue</title>
+    <style>
+        body{
+            font-family:Arial;
+            background:#111827;
+            color:white;
+            text-align:center;
+            padding-top:80px;
+        }
+
+        #number{
+            font-size:100px;
+            color:#22c55e;
+            margin:20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Now Serving</h1>
+    <div id="number">Waiting...</div>
+
+    <script>
+        Notification.requestPermission();
+
+        // Listen to the same channel
+        const channel = new BroadcastChannel("payment_queue");
+
+        channel.onmessage = function(event) {
+            const receivedNumber = event.data.number;
+
+            document.getElementById("number").innerText = receivedNumber;
+
+            if (Notification.permission === "granted") {
+                new Notification("Payment Queue", {
+                    body: "Your queue number is now being served: " + receivedNumber
+                });
+            }
+        };
+    </script>
+
+</body>
+</html>
