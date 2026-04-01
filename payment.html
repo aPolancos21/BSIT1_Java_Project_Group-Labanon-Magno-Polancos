@@ -1,0 +1,96 @@
+<!-- payment.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Queue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .box {
+            background: #1e293b;
+            width: 350px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #paymentNumber {
+            font-size: 100px;
+            color: #22c55e;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .next-btn {
+            background: #22c55e;
+        }
+
+        .back-btn {
+            background: #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h1>Payment Queue</h1>
+
+        <div id="paymentNumber">1</div>
+
+        <button class="next-btn" onclick="nextPayment()">
+            Next Student
+        </button>
+
+        <button class="back-btn" onclick="history.back()">
+            Return
+        </button>
+    </div>
+
+    <script>
+        let payment = Number(localStorage.getItem("paymentQueue")) || 1;
+
+        document.getElementById("paymentNumber").innerText = payment;
+
+        Notification.requestPermission();
+
+        function nextPayment() {
+            payment++;
+            document.getElementById("paymentNumber").innerText = payment;
+
+            localStorage.setItem("paymentQueue", payment);
+
+            if (Notification.permission === "granted") {
+                new Notification("Payment Queue", {
+                    body: "Now serving number " + payment
+                });
+            }
+        }
+
+        window.addEventListener("storage", function(event) {
+            if (event.key === "paymentQueue") {
+                document.getElementById("paymentNumber").innerText = event.newValue;
+            }
+        });
+    </script>
+
+</body>
+</html>

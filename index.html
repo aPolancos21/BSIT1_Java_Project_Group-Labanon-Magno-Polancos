@@ -1,0 +1,86 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Queue System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 40px;
+            width: 280px;
+            border-radius: 18px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+        }
+
+        .payment-btn,
+        .question-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .payment-btn {
+            background: #22c55e;
+        }
+
+        .payment-btn:hover {
+            background: #16a34a;
+        }
+
+        .question-btn {
+            background: #3b82f6;
+        }
+
+        .question-btn:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Student Queue System</h1>
+
+    <div class="container">
+        <div class="card">
+            <h2>Payment Queue</h2>
+            <a class="payment-btn" href="payment.html">
+                Open Payment
+            </a>
+        </div>
+
+        <div class="card">
+            <h2>Questioning Queue</h2>
+            <a class="question-btn" href="question.html">
+                Open Questioning
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
