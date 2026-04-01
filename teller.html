@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Teller</title>
+    <style>
+        body{
+            font-family: Arial;
+            background:#0f172a;
+            color:white;
+            text-align:center;
+            padding-top:80px;
+        }
+
+        #number{
+            font-size:100px;
+            color:#22c55e;
+            margin:20px;
+        }
+
+        button{
+            padding:15px 25px;
+            font-size:18px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            margin:10px;
+            color:white;
+        }
+
+        .next{
+            background:#22c55e;
+        }
+
+        .back{
+            background:#ef4444;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Payment Teller</h1>
+    <div id="number">1</div>
+
+    <button class="next" onclick="nextStudent()">Next Student</button>
+    <button class="back" onclick="location.href='index.html'">Return</button>
+
+    <script>
+        let currentNumber = 1;
+
+        // Create the communication channel
+        const channel = new BroadcastChannel("payment_queue");
+
+        function nextStudent() {
+            currentNumber++;
+            document.getElementById("number").innerText = currentNumber;
+
+            // Send the new number to the student page
+            channel.postMessage({
+                number: currentNumber
+            });
+        }
+    </script>
+
+</body>
+</html>
