@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First Aid Guide</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .box,
+    .card,
+    .modal {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    .box {
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0 0 10px;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+
+    .hotlines,
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .card {
+      padding: 14px;
+      cursor: pointer;
+    }
+
+    .top,
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .tag {
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #ffffff;
+    }
+
+    .high {
+      background: #dc2626;
+    }
+
+    .mid {
+      background: #d97706;
+    }
+
+    .low {
+      background: #15803d;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="box">
+      <h1>First Aid Guide</h1>
+      <p class="muted">Basic first aid steps and Davao hotline numbers.</p>
+    </div>
+
+    <div class="box">
+      <h2>Davao Hotline Numbers</h2>
+      <div class="hotlines">
+        <div class="card">
+          <strong>Emergency</strong>
+          <p class="muted">911</p>
+        </div>
+        <div class="card">
+          <strong>Central 911 Office</strong>
+          <p class="muted">(082) 296-9626</p>
+        </div>
+        <div class="card">
+          <strong>Contact Center</strong>
+          <p class="muted">(082) 235-9999</p>
+        </div>
+        <div class="card">
+          <strong>Mobile</strong>
+          <p class="muted">0918-901-9991 to 0918-908-9991</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Categories</h2>
+      <div class="filters" id="filters">
+        <button class="btn active" onclick="filterCat('all', this)">All</button>
+        <button class="btn" onclick="filterCat('wounds', this)">Wounds</button>
+        <button class="btn" onclick="filterCat('burns', this)">Burns</button>
+        <button class="btn" onclick="filterCat('breathing', this)">Breathing</button>
+        <button class="btn" onclick="filterCat('bone', this)">Bone</button>
+        <button class="btn" onclick="filterCat('head', this)">Head</button>
+        <button class="btn" onclick="filterCat('other', this)">Other</button>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="if (event.target === this) closeModal()">
+    <div class="modal">
+      <div class="row">
+        <div>
+          <h3 id="title"></h3>
+          <div id="urgency"></div>
+        </div>
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+
+      <p id="warning"></p>
+      <ul id="steps"></ul>
+      <p id="call"></p>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      {
+        id: 1,
+        cat: "wounds",
+        title: "Minor Cut",
+        u: "low",
+        preview: "Clean, stop bleeding, and cover it.",
+        warning: "Get help if it is deep or still bleeding.",
+        steps: [
+          "Press with a clean cloth.",
+          "Rinse with clean water.",
+          "Cover with a bandage."
+        ],
+        call: "See a doctor if needed."
+      },
+      {
+        id: 2,
+        cat: "wounds",
+        title: "Severe Bleeding",
+        u: "high",
+        preview: "Heavy bleeding needs urgent action.",
+        warning: "Call emergency services immediately.",
+        steps: [
+          "Call 911.",
+          "Press hard on the wound.",
+          "Add more cloth if soaked."
+        ],
+        call: "Keep pressure until help arrives."
+      },
+      {
+        id: 3,
+        cat: "burns",
+        title: "Minor Burn",
+        u: "low",
+        preview: "Cool the area and protect it.",
+        warning: "Do not use ice or toothpaste.",
+        steps: [
+          "Move away from heat.",
+          "Cool with water for 10 to 20 minutes.",
+          "Cover loosely."
+        ],
+        call: "Get help if large or serious."
+      },
+      {
+        id: 4,
+        cat: "burns",
+        title: "Severe Burn",
+        u: "high",
+        preview: "Deep burns are an emergency.",
+        warning: "Do not remove stuck clothing.",
+        steps: [
+          "Call 911.",
+          "Move to safety.",
+          "Cover with a clean dry cloth."
+        ],
+        call: "Watch breathing until help arrives."
+      },
+      {
+        id: 5,
+        cat: "breathing",
+        title: "Choking Adult",
+        u: "high",
+        preview: "Act fast if they cannot breathe.",
+        warning: "Every second matters.",
+        steps: [
+          "Call for help.",
+          "Give 5 back blows.",
+          "Give abdominal thrusts if needed."
+        ],
+        call: "Call 911 if not cleared."
+      },
+      {
+        id: 6,
+        cat: "breathing",
+        title: "Choking Infant",
+        u: "high",
+        preview: "Use baby choking steps only.",
+        warning: "Do not use adult abdominal thrusts.",
+        steps: [
+          "Hold baby face-down.",
+          "Give 5 back blows.",
+          "Give 5 chest thrusts."
+        ],
+        call: "Call 911 if needed."
+      },
+      {
+        id: 7,
+        cat: "bone",
+        title: "Fracture",
+        u: "mid",
+        preview: "Keep still and support the injury.",
+        warning: "Do not straighten the bone.",
+        steps: [
+          "Keep still.",
+          "Support with splint or padding.",
+          "Use wrapped ice."
+        ],
+        call: "Go to the ER if severe."
+      },
+      {
+        id: 8,
+        cat: "bone",
+        title: "Sprain",
+        u: "low",
+        preview: "Rest, ice, and elevate.",
+        warning: "A bad sprain may be a fracture.",
+        steps: [
+          "Rest the area.",
+          "Apply ice.",
+          "Wrap and elevate."
+        ],
+        call: "See a doctor if severe."
+      },
+      {
+        id: 9,
+        cat: "head",
+        title: "Head Injury",
+        u: "high",
+        preview: "Watch for serious symptoms.",
+        warning: "Do not leave the person alone.",
+        steps: [
+          "Check if responsive.",
+          "Watch for vomiting or confusion.",
+          "Get medical help if worse."
+        ],
+        call: "Call 911 for severe signs."
+      },
+      {
+        id: 10,
+        cat: "head",
+        title: "Nosebleed",
+        u: "low",
+        preview: "Lean forward and pinch the nose.",
+        warning: "Do not tilt the head back.",
+        steps: [
+          "Sit and lean forward.",
+          "Pinch for 10 to 15 minutes.",
+          "Use cold compress."
+        ],
+        call: "Get help if over 20 minutes."
+      },
+      {
+        id: 11,
+        cat: "other",
+        title: "Electric Shock",
+        u: "high",
+        preview: "Make the area safe first.",
+        warning: "Do not touch until power is off.",
+        steps: [
+          "Turn off power.",
+          "Call 911.",
+          "Check breathing."
+        ],
+        call: "All shocks need medical care."
+      },
+      {
+        id: 12,
+        cat: "other",
+        title: "Heat Stroke",
+        u: "high",
+        preview: "Cool the person quickly.",
+        warning: "Heat stroke is an emergency.",
+        steps: [
+          "Call 911.",
+          "Move to a cool place.",
+          "Cool with water or cold packs."
+        ],
+        call: "Stay with them until help arrives."
+      }
+    ];
+
+    let active = "all";
+    const grid = document.getElementById("grid");
+    const overlay = document.getElementById("overlay");
+
+    function label(level) {
+      if (level === "high") return "Emergency";
+      if (level === "mid") return "See Doctor";
+      return "Basic Care";
+    }
+
+    function render() {
+      const items = active === "all"
+        ? data
+        : data.filter(item => item.cat === active);
+
+      if (items.length === 0) {
+        grid.innerHTML = '<div class="card">No guide found.</div>';
+        return;
+      }
+
+      grid.innerHTML = items.map(item => `
+        <div class="card" onclick="openModal(${item.id})">
+          <div class="top">
+            <strong>${item.title}</strong>
+            <span class="tag ${item.u}">${label(item.u)}</span>
+          </div>
+          <p class="muted">${item.preview}</p>
+        </div>
+      `).join("");
+    }
+
+    function filterCat(category, button) {
+      active = category;
+      document.querySelectorAll(".btn").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      render();
+    }
+
+    function openModal(id) {
+      const item = data.find(entry => entry.id === id);
+      document.getElementById("title").textContent = item.title;
+      document.getElementById("urgency").innerHTML =
+        `<span class="tag ${item.u}">${label(item.u)}</span>`;
+      document.getElementById("warning").textContent = "Warning: " + item.warning;
+      document.getElementById("steps").innerHTML = item.steps.map((step, index) =>
+        `<li>${index + 1}. ${step}</li>`
+      ).join("");
+      document.getElementById("call").textContent = "When to get help: " + item.call;
+      overlay.classList.add("open");
+    }
+
+    function closeModal() {
+      overlay.classList.remove("open");
+    }
+
+    render();
+  </script>
+</body>
+</html>
