@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First Aid Guide</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(243, 244, 246, 0.9), rgba(243, 244, 246, 0.9)),
+        url("https://www.addu.edu.ph/wp-content/uploads/2020/08/UniversitySeal240px.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: min(60vw, 420px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .box,
+    .card,
+    .modal {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    .box {
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0 0 10px;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+
+    .hotlines,
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .card {
+      padding: 14px;
+      cursor: pointer;
+    }
+
+    .top,
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .tag {
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #ffffff;
+    }
+
+    .high {
+      background: #dc2626;
+    }
+
+    .mid {
+      background: #d97706;
+    }
+
+    .low {
+      background: #15803d;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="box">
+      <h1>First Aid Guide</h1>
+      <p class="muted">Basic first aid steps and Davao hotline numbers.</p>
+    </div>
+
+    <div class="box">
+      <h2>Davao Hotline Numbers</h2>
+      <div class="hotlines">
+        <div class="card">
+          <strong>Emergency</strong>
+          <p class="muted">911</p>
+        </div>
+        <div class="card">
+          <strong>Central 911 Office</strong>
+          <p class="muted">(082) 296-9626</p>
+        </div>
+        <div class="card">
+          <strong>Contact Center</strong>
+          <p class="muted">(082) 235-9999</p>
+        </div>
+        <div class="card">
+          <strong>Mobile</strong>
+          <p class="muted">0918-901-9991 to 0918-908-9991</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Categories</h2>
+      <div class="filters" id="filters">
+        <button class="btn active" onclick="filterCat('all', this)">All</button>
+        <button class="btn" onclick="filterCat('wounds', this)">Wounds</button>
+        <button class="btn" onclick="filterCat('burns', this)">Burns</button>
+        <button class="btn" onclick="filterCat('breathing', this)">Breathing</button>
+        <button class="btn" onclick="filterCat('bone', this)">Bone</button>
+        <button class="btn" onclick="filterCat('head', this)">Head</button>
+        <button class="btn" onclick="filterCat('other', this)">Other</button>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="if (event.target === this) closeModal()">
+    <div class="modal">
+      <div class="row">
+        <div>
+          <h3 id="title"></h3>
+          <div id="urgency"></div>
+        </div>
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+
+      <p id="warning"></p>
+      <ul id="steps"></ul>
+      <p id="call"></p>
+    </div>
+  </div>
+
+  <script>
+    let active = "all";
+    let data = [];
+    const grid = document.getElementById("grid");
+    const overlay = document.getElementById("overlay");
+
+    function getWarningText(item) {
+      if (item.urgency === "high") return "Get emergency help right away.";
+      if (item.urgency === "mid") return "Medical attention is recommended as soon as possible.";
+      return "Monitor the situation and seek help if symptoms get worse.";
+    }
+
+    function getHelpText(item) {
+      if (item.urgency === "high") return "Call 911 or go to the nearest emergency room.";
+      if (item.urgency === "mid") return "Visit a doctor or clinic if pain or symptoms continue.";
+      return "Use basic care and consult a doctor if healing does not improve.";
+    }
+
+    async function loadData(category = "all") {
+      grid.innerHTML = '<div class="card">Loading guides...</div>';
+
+      try {
+        const url = new URL("FirstAidServlet", window.location.href);
+        if (category && category !== "all") {
+          url.searchParams.set("category", category);
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to load first aid data.");
+        }
+
+        data = await response.json();
+        render();
+      } catch (error) {
+        grid.innerHTML = '<div class="card">Unable to load guide data from the servlet.</div>';
+      }
+    }
+
+    function label(level) {
+      if (level === "high") return "Emergency";
+      if (level === "mid") return "See Doctor";
+      return "Basic Care";
+    }
+
+    function render() {
+      const items = data;
+
+      if (items.length === 0) {
+        grid.innerHTML = '<div class="card">No guide found.</div>';
+        return;
+      }
+
+      grid.innerHTML = items.map(item => `
+        <div class="card" onclick="openModal(${item.id})">
+          <div class="top">
+            <strong>${item.title}</strong>
+            <span class="tag ${item.urgency}">${label(item.urgency)}</span>
+          </div>
+          <p class="muted">${item.preview}</p>
+        </div>
+      `).join("");
+    }
+
+    function filterCat(category, button) {
+      active = category;
+      document.querySelectorAll(".btn").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      loadData(category);
+    }
+
+    function openModal(id) {
+      const item = data.find(entry => entry.id === id);
+      if (!item) {
+        return;
+      }
+
+      document.getElementById("title").textContent = item.title;
+      document.getElementById("urgency").innerHTML =
+        `<span class="tag ${item.urgency}">${label(item.urgency)}</span>`;
+      document.getElementById("warning").textContent = "Warning: " + getWarningText(item);
+      document.getElementById("steps").innerHTML = item.steps.map((step, index) =>
+        `<li>${index + 1}. ${step}</li>`
+      ).join("");
+      document.getElementById("call").textContent = "When to get help: " + getHelpText(item);
+      overlay.classList.add("open");
+    }
+
+    function closeModal() {
+      overlay.classList.remove("open");
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
